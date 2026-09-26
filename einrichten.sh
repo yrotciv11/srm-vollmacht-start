@@ -294,9 +294,9 @@ fi
 FALLS_INTERN=""
 case "$IP" in
   127.*|10.*|192.168.*|172.1[6-9].*|172.2[0-9].*|172.3[01].*|169.254.*)
-    FALLS_INTERN="  ACHTUNG: ${IP} gilt nur im eigenen Netz. Für den Zugriff
-  aus dem Internet brauchen Sie die öffentliche Adresse: beim Anbieter
-  nachsehen (dort steht sie unter „Server" oder „Netzwerk")."
+    FALLS_INTERN="  ACHTUNG: ${IP} gilt nur im eigenen Netz.
+  Fuer den Zugriff aus dem Internet brauchen Sie die oeffentliche Adresse.
+  Die steht beim Anbieter unter Server oder Netzwerk."
     ;;
 esac
 
