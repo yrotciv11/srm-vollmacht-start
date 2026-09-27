@@ -197,6 +197,11 @@ einstellungen() {
   local ziel="${ABLAGE}/einstellungen"
   mkdir -p "$ziel"
 
+  # $APPDATA gibt es nur unter Windows. Auf Linux und macOS ist die Variable
+  # nicht gesetzt – und mit "set -u" würde das Skript beim bloßen Erwähnen
+  # abbrechen. Deshalb hier ein leerer Ersatzwert.
+  local appdata="${APPDATA:-}"
+
   local gefunden=0
   for quelle in \
     "$HOME/.config/Cursor/User/settings.json" \
@@ -205,9 +210,10 @@ einstellungen() {
     "$HOME/Library/Application Support/Cursor/User/settings.json" \
     "$HOME/Library/Application Support/Cursor/User/keybindings.json" \
     "$HOME/Library/Application Support/Cursor/User/snippets" \
-    "$APPDATA/Cursor/User/settings.json" \
-    "$APPDATA/Cursor/User/keybindings.json" \
-    "$APPDATA/Cursor/User/snippets"; do
+    "${appdata:+$appdata/Cursor/User/settings.json}" \
+    "${appdata:+$appdata/Cursor/User/keybindings.json}" \
+    "${appdata:+$appdata/Cursor/User/snippets}"; do
+    [ -n "$quelle" ] || continue
     [ -e "$quelle" ] || continue
     local name
     name="$(echo "$quelle" | sed 's|.*/User/||; s|/|_|g')"
@@ -222,6 +228,13 @@ einstellungen() {
   fi
   [ -s "${ziel}/erweiterungen.txt" ] && gefunden=$((gefunden + 1))
 
+  # Immer erfolgreich enden. Findet sich nichts, ist das kein Fehler –
+  # Cursor legt seine Einstellungsdateien erst beim ersten Start an.
+  # Ein Fehlercode hier würde beim Aufruf aus 'merken' die ganze
+  # Sicherung als fehlgeschlagen erscheinen lassen.
+  if [ "$gefunden" -eq 0 ]; then
+    return 0
+  fi
   return 0
 }
 
